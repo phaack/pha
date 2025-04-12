@@ -1,0 +1,13 @@
+[package]
+name = "pha-assets"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+pha-protocol = { path = "../pha-protocol" }
+bevy.workspace = true
+lightyear.workspace = true
+avian3d.workspace = true
+
+[lints]
+workspace = true

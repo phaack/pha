@@ -1,0 +1,24 @@
+[package]
+name = "pha-client"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+pha-common = { path = "../pha-common" }
+pha-render = { path = "../pha-render" }
+pha-protocol = { path = "../pha-protocol" }
+pha-assets = { path = "../pha-assets" }
+pha-server = { path = "../pha-server", optional = true }
+lightyear.workspace = true
+leafwing-input-manager.workspace = true
+avian3d.workspace = true
+serde.workspace = true
+bevy.workspace = true
+crossbeam-channel.workspace = true
+
+[lints]
+workspace = true
+
+
+[features]
+host = ["dep:pha-server"]
