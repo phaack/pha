@@ -28,6 +28,8 @@ impl Plugin for InputPlugin {
 pub enum LocalInput {
     #[actionlike(Button)]
     SystemMenuOrCancel,
+    #[actionlike(DualAxis)]
+    MouseMove,
 }
 
 fn add_local_input_map(
@@ -37,9 +39,10 @@ fn add_local_input_map(
     for player in &q_local_player {
         commands.entity(player).insert((
             InputMap::<NetworkedInput>::default()
-                .with_dual_axis(NetworkedInput::Move, VirtualDPad::wasd())
-                .with_dual_axis(NetworkedInput::Aim, MouseMove::default().sensitivity(1.0)),
-            InputMap::<LocalInput>::default().with(LocalInput::SystemMenuOrCancel, KeyCode::Escape),
+                .with_dual_axis(NetworkedInput::Move, VirtualDPad::wasd()),
+            InputMap::<LocalInput>::default()
+                .with(LocalInput::SystemMenuOrCancel, KeyCode::Escape)
+                .with_dual_axis(LocalInput::MouseMove, MouseMove::default().sensitivity(1.0)),
             ActionState::<LocalInput>::default(),
         ));
     }
