@@ -8,7 +8,7 @@ use lightyear::prelude::{
 use pha_assets::CurrentLevel;
 use pha_common::REPLICATION_GROUP_PREDICTED;
 use pha_protocol::{
-    component::Player,
+    component::{Player, ViewDirection},
     message::{ClientLevelLoadComplete, Level, ServerWelcome, UnorderedReliable},
 };
 
@@ -32,10 +32,12 @@ fn on_client_load_complete(
         let player_start_position = Position(Vec3::new(0.0, 6.0, 0.0));
 
         if !player_exists {
+            println!("loading player with view direction");
             commands.spawn((
                 player_start_position,
                 Rotation::default(),
                 Player(ev.from),
+                ViewDirection::default(),
                 ServerReplicate {
                     group: REPLICATION_GROUP_PREDICTED,
                     controlled_by: ControlledBy {

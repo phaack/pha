@@ -6,7 +6,7 @@ use lightyear::prelude::{
     server::ReplicationTarget,
 };
 use pha_assets::{LevelState, assets::GlobalAssets};
-use pha_protocol::{component::Player, input::NetworkedInput};
+use pha_protocol::{component::{Player, ViewDirection}, input::NetworkedInput};
 
 use crate::{Rendered, Simulated};
 
@@ -19,7 +19,7 @@ impl Plugin for PlayerPlugin {
             (add_player_gameplay_components).run_if(in_state(LevelState::Loaded)),
         );
 
-        app.add_systems(FixedUpdate, move_player);
+        app.add_systems(FixedUpdate, (move_player, rotate_player_from_view));
     }
 }
 
@@ -54,5 +54,20 @@ fn move_player(
             let move_vec = Vec3::new(movement.pair.x, 0.0, -movement.pair.y).normalize();
             velocity.0 = move_vec * PLAYER_MOVE_SPEED;
         }
+    }
+}
+
+/// Rotates the player's transform based on their ViewDirection component
+pub fn rotate_player_from_view(
+    mut q_player: Query<(&ViewDirection, &mut Transform), With<Player>>,
+) {
+    for (view_direction, mut transform) in q_player.iter_mut() {
+        // Get the quaternion from ViewDirection and convert to Bevy's Quat if needed
+        let view_quat: Quat = view_direction.0.into();
+        
+        // Set only the yaw component (rotation around Y axis)
+        // This prevents the player model from pitching up/down while still letting it look around horizontally
+        let (pitch, yaw, _) = view_quat.to_euler(EulerRot::YXZ);
+        transform.rotation = Quat::from_rotation_y(yaw) * Quat::from_rotation_x(pitch);
     }
 }

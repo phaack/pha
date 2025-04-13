@@ -6,7 +6,7 @@ use lightyear::prelude::{
 };
 use pha_assets::{CurrentLevel, LevelState};
 use pha_protocol::{
-    component::Player,
+    component::{Player, ViewDirection},
     message::{ClientLevelLoadComplete, ServerWelcome, UnorderedReliable},
 };
 
@@ -24,6 +24,9 @@ impl Plugin for ReplicationPlugin {
         );
         app.add_systems(Update, await_spawn.run_if(in_state(GameState::Spawning)));
         app.add_systems(OnEnter(LevelState::Loaded), on_assets_loaded);
+        
+        // Add a cleanup system to run when the player disconnects or changes states
+        app.add_systems(OnExit(GameState::Playing), cleanup_local_player);
     }
 }
 
@@ -57,14 +60,31 @@ fn on_server_welcome(
     }
 }
 
+/// Cleanup any existing LocalPlayer entities to avoid duplicates
+fn cleanup_local_player(mut commands: Commands, local_players: Query<Entity, With<LocalPlayer>>) {
+    for entity in local_players.iter() {
+        commands.entity(entity).remove::<LocalPlayer>();
+    }
+}
+
 fn await_spawn(
     mut commands: Commands,
     q_spawned_player: Query<(Entity, &Player), Added<Player>>,
     client: Res<ClientConnection>,
+    existing_local_players: Query<Entity, With<LocalPlayer>>,
 ) {
+    // Clean up any existing LocalPlayer entities first to avoid duplicates
+    for entity in existing_local_players.iter() {
+        commands.entity(entity).remove::<LocalPlayer>();
+    }
+
     for (entity, player) in &q_spawned_player {
         if player.0 == client.id() {
-            commands.entity(entity).insert(LocalPlayer);
+            // Add both LocalPlayer and ViewDirection components
+            commands.entity(entity).insert((
+                LocalPlayer,
+                ViewDirection::default(),
+            ));
             commands.set_state(GameState::Playing);
         }
     }

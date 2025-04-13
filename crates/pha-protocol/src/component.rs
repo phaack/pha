@@ -1,4 +1,4 @@
-use avian3d::prelude::*;
+use avian3d::{math::Quaternion, prelude::*};
 use bevy::prelude::*;
 use lightyear::{
     prelude::{
@@ -11,10 +11,18 @@ use lightyear::{
 #[derive(Component, Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct Player(pub ClientId);
 
+#[derive(Component, Serialize, Deserialize, Clone, Debug, PartialEq, Default, Reflect)]
+pub struct ViewDirection(pub Quaternion);
+
 pub fn register_components(app: &mut App) {
+    app.register_type::<ViewDirection>();
+
     app.register_component::<Player>(ChannelDirection::ServerToClient)
         .add_prediction(ComponentSyncMode::Once)
         .add_interpolation(ComponentSyncMode::Once);
+
+    app.register_component::<ViewDirection>(ChannelDirection::ClientToServer)
+        .add_prediction(ComponentSyncMode::Full);
 
     app.register_component::<Position>(ChannelDirection::ServerToClient)
         .add_prediction(ComponentSyncMode::Full)
