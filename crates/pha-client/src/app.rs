@@ -1,4 +1,5 @@
 use bevy::asset::AssetMetaCheck;
+use bevy::render::settings::{Backends, WgpuSettings};
 use bevy::{
     log::{Level, LogPlugin},
     prelude::*,
@@ -41,11 +42,20 @@ fn build_core_client_app(
     asset_path: String,
 ) -> &mut App {
     app.add_plugins((
-        DefaultPlugins.build().set(AssetPlugin {
-            file_path: asset_path.clone(),
-            meta_check: AssetMetaCheck::Never,
-            ..default()
-        }),
+        DefaultPlugins
+            .set(bevy::render::RenderPlugin {
+                render_creation: bevy::render::settings::RenderCreation::Automatic(WgpuSettings {
+                    backends: Some(Backends::VULKAN),
+                    ..default()
+                }),
+                ..Default::default()
+            })
+            .build()
+            .set(AssetPlugin {
+                file_path: asset_path.clone(),
+                meta_check: AssetMetaCheck::Never,
+                ..default()
+            }),
         ClientPlugins {
             config: client_remote_config.clone(),
         },

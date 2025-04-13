@@ -13,7 +13,7 @@ use bevy::{
         RenderPlugin as BevyRenderPlugin,
         camera::CameraPlugin,
         mesh::skinning::SkinnedMeshInverseBindposes,
-        settings::{RenderCreation, WgpuSettings},
+        settings::{Backends, RenderCreation, WgpuSettings},
     },
     scene::ScenePlugin,
     state::app::StatesPlugin,
@@ -45,7 +45,21 @@ pub fn build_server_app(server_config: ServerConfig, asset_path: String, mode: S
 
     match mode {
         ServerMode::Windowed => {
-            app.add_plugins((DefaultPlugins.build().set(asset_plugin), RenderPlugin));
+            app.add_plugins((
+                DefaultPlugins
+                    .build()
+                    .set(bevy::render::RenderPlugin {
+                        render_creation: bevy::render::settings::RenderCreation::Automatic(
+                            WgpuSettings {
+                                backends: Some(Backends::VULKAN),
+                                ..default()
+                            },
+                        ),
+                        ..Default::default()
+                    })
+                    .set(asset_plugin),
+                RenderPlugin,
+            ));
         }
         _ => {
             app.add_plugins((
