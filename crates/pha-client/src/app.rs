@@ -22,6 +22,7 @@ use crate::{
 
 #[cfg(feature = "host")]
 use crate::host::HostPlugin;
+use bevy_fps_counter::{FpsCounter, FpsCounterPlugin};
 #[cfg(feature = "host")]
 use lightyear::prelude::client::IoConfig;
 
@@ -69,6 +70,7 @@ fn build_core_client_app(
         InputPlugin,
         InterpolationPlugin,
         PlayerCameraPlugin,
+        FpsCounterPlugin,
     ));
 
     app.insert_resource(AssetPath(asset_path));
