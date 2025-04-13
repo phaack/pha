@@ -1,4 +1,4 @@
-use avian3d::prelude::{Collider, RigidBody};
+use avian3d::prelude::{AngularVelocity, Collider, RigidBody};
 use bevy::prelude::*;
 use lightyear::prelude::*;
 use pha_assets::{CurrentLevel, Geometry, LevelState, assets::LevelAssets};
@@ -32,8 +32,21 @@ fn level_loaded(
 fn add_level_gameplay_components(
     mut commands: Commands,
     q_geo: Query<Entity, (With<Geometry>, Without<RigidBody>)>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
     for geo in &q_geo {
         commands.entity(geo).insert(RigidBody::Static);
     }
+
+    // insert a cube
+    // Dynamic physics object with a collision shape and initial angular velocity
+    commands.spawn((
+        RigidBody::Dynamic,
+        Collider::cuboid(1.0, 1.0, 1.0),
+        AngularVelocity(Vec3::new(2.5, 3.5, 1.5)),
+        Mesh3d(meshes.add(Cuboid::from_length(1.0))),
+        MeshMaterial3d(materials.add(Color::srgb_u8(124, 144, 255))),
+        Transform::from_xyz(0.0, 4.0, 0.0),
+    ));
 }
