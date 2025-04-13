@@ -39,14 +39,22 @@ fn add_level_gameplay_components(
         commands.entity(geo).insert(RigidBody::Static);
     }
 
+    // Static physics object with a collision shape
+    commands.spawn((
+        RigidBody::Static,
+        Collider::cylinder(15.0, 0.1),
+        Mesh3d(meshes.add(Cylinder::new(15.0, 0.1))),
+        MeshMaterial3d(materials.add(Color::WHITE)),
+    ));
+
     // insert a cube
     // Dynamic physics object with a collision shape and initial angular velocity
     commands.spawn((
         RigidBody::Dynamic,
-        Collider::cuboid(1.0, 1.0, 1.0),
-        AngularVelocity(Vec3::new(2.5, 3.5, 1.5)),
+        Collider::cuboid(2.0, 2.0, 2.0),
+        AngularVelocity(Vec3::new(2.5, 0.0, 1.5)),
         Mesh3d(meshes.add(Cuboid::from_length(1.0))),
         MeshMaterial3d(materials.add(Color::srgb_u8(124, 144, 255))),
-        Transform::from_xyz(0.0, 4.0, 0.0),
+        Transform::from_xyz(2.0, 10.0, 2.0),
     ));
 }
