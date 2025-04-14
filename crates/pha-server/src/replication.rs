@@ -12,6 +12,8 @@ use pha_protocol::{
     message::{ClientLevelLoadComplete, Level, ServerWelcome, UnorderedReliable},
 };
 
+use crate::player::player_plugin::server_spawn_player;
+
 pub struct ReplicationPlugin;
 impl Plugin for ReplicationPlugin {
     fn build(&self, app: &mut App) {
@@ -32,28 +34,7 @@ fn on_client_load_complete(
         let player_start_position = Position(Vec3::new(0.0, 6.0, 0.0));
 
         if !player_exists {
-            println!("loading player with view direction");
-            commands.spawn((
-                player_start_position,
-                Rotation::default(),
-                Player(ev.from),
-                ServerReplicate {
-                    group: REPLICATION_GROUP_PREDICTED,
-                    controlled_by: ControlledBy {
-                        target: NetworkTarget::Single(ev.from),
-                        lifetime: Lifetime::SessionBased,
-                    },
-                    sync: SyncTarget {
-                        prediction: NetworkTarget::Single(ev.from),
-                        interpolation: NetworkTarget::AllExceptSingle(ev.from),
-                    },
-                    hierarchy: ReplicateHierarchy {
-                        enabled: false,
-                        ..default()
-                    },
-                    ..Default::default()
-                },
-            ));
+            server_spawn_player(player_start_position, ev.from, &mut commands);
         } else {
             warn!(
                 "Client {} reported load complete, but character already existed in world. Ignoring.",

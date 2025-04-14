@@ -1,0 +1,29 @@
+player_entity:
+  - Position (server authoritative
+  - Player (identifies this as the core player entity)
+  - children:
+    - PhysicsModel:
+      - Rotation (server authoritative, influences physics)
+      - CapsuleHitbox
+      - BoneHitbox
+      - PlayerPhysicsMarker
+    - RenderModel:
+      - Model (skinned mesh)
+      - Animator
+      - PlayerRenderMarker
+    - CameraHolder:
+      - Transform (local offset from player)
+        - Camera:
+          - Camera
+          - Transform (local rotation)
+        - PlayerCameraMarker
+    - UIHolder:
+      - UI elements
+      - UIMarker
+    - ViewModelHolder:
+      - Model (first-person weapon)
+      - PlayerViewModelMarker
+    - ViewDirectionEntity:
+      - ViewDirection (client authoritative, sent to server)
+      - ReplicateToServer
+      - PlayerViewDirectionMarker

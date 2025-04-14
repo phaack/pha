@@ -5,7 +5,7 @@ use lightyear::prelude::{
 };
 use pha_protocol::components::look_orientation::LookOrientation;
 
-use crate::{player_camera::LocalCamera, replication::LocalPlayer};
+use super::client_local_camera::LocalCameraMarker;
 
 #[derive(Component)]
 pub struct LocalViewDirection;
@@ -54,7 +54,7 @@ pub fn create_look_orientation_component(commands: &mut Commands) -> Entity {
 }
 
 fn update_look_orienatation_from_camera(
-    q_camera: Query<&Transform, (With<Camera3d>, With<LocalCamera>)>,
+    q_camera: Query<&Transform, (With<Camera3d>, With<LocalCameraMarker>)>,
     mut q_player: Query<(Entity, &mut LookOrientation), With<LocalViewDirection>>,
 ) {
     for cam in q_camera.iter() {

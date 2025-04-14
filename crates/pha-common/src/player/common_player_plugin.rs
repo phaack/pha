@@ -10,10 +10,13 @@ use pha_protocol::{component::Player, input::NetworkedInput};
 
 use crate::{Rendered, Simulated};
 
+use super::common_movement_plugin::CommonMovemenPlugin;
+
 pub struct CommonPlayerPlugin;
 
 impl Plugin for CommonPlayerPlugin {
     fn build(&self, app: &mut App) {
+        app.add_plugins(CommonMovemenPlugin);
         app.add_systems(
             Update,
             (add_player_gameplay_components).run_if(in_state(LevelState::Loaded)),

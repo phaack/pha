@@ -17,7 +17,6 @@ use crate::input::InputPlugin;
 use crate::player::client_look_orientation::ViewDirectionPlugin;
 use crate::player::client_player_plugin::ClientPlayerPlugin;
 use crate::player::movement::ClientMovementPlugin;
-use crate::player_camera::PlayerCameraPlugin;
 use crate::{
     interpolation::InterpolationPlugin, network::NetworkPlugin, replication::ReplicationPlugin,
     ui::UiPlugin,
@@ -72,7 +71,6 @@ fn build_core_client_app(
         ReplicationPlugin,
         InputPlugin,
         InterpolationPlugin,
-        PlayerCameraPlugin,
         FpsCounterPlugin,
     ));
 

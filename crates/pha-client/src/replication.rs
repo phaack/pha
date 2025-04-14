@@ -1,5 +1,9 @@
 use crate::{
-    game_state::GameState, player::client_look_orientation::create_look_orientation_component,
+    game_state::GameState,
+    player::{
+        client_look_orientation::create_look_orientation_component,
+        client_player_plugin::client_spawn_local_player_components,
+    },
 };
 use bevy::prelude::*;
 use lightyear::prelude::{
@@ -80,14 +84,13 @@ fn await_spawn(
         commands.entity(entity).remove::<LocalPlayer>();
     }
 
-    for (entity, player) in &q_spawned_player {
+    for (player_entity, player) in &q_spawned_player {
         if player.0 == client.id() {
             // Add both LocalPlayer and LookOrientation components
-            commands.entity(entity).insert(LocalPlayer);
-            // Create seperate LookOrientation entity for networking
-            let view_dir = create_look_orientation_component(&mut commands);
-            // // Add the ViewDirection as a child
-            commands.entity(entity).add_child(view_dir);
+            commands.entity(player_entity).insert(LocalPlayer);
+
+            // call client_spawn_local_player_component
+            client_spawn_local_player_components(&mut commands, player_entity);
 
             commands.set_state(GameState::Playing);
         }
