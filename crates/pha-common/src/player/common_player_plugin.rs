@@ -13,9 +13,9 @@ use pha_protocol::{
 
 use crate::{Rendered, Simulated};
 
-pub struct PlayerPlugin;
+pub struct CommonPlayerPlugin;
 
-impl Plugin for PlayerPlugin {
+impl Plugin for CommonPlayerPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Update,

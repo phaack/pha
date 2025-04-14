@@ -11,6 +11,8 @@ use pha_protocol::ProtocolPlugin;
 pub mod level;
 pub mod player;
 
+use player::common_player_plugin::CommonPlayerPlugin;
+
 pub struct CommonPlugin;
 
 impl Plugin for CommonPlugin {
@@ -22,7 +24,8 @@ impl Plugin for CommonPlugin {
                 .build()
                 .disable::<PhysicsInterpolationPlugin>(),
             level::LevelPlugin,
-            player::PlayerPlugin,
+            //
+            CommonPlayerPlugin,
         ));
     }
 }
