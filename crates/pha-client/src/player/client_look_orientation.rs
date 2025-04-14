@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use lightyear::prelude::{
     ParentSync, ReplicateHierarchy, Replicated, ReplicationGroup, client::ReplicateToServer,
 };
-use pha_protocol::component::ViewDirection;
+use pha_protocol::components::look_orientation::LookOrientation;
 
 use crate::{player_camera::LocalCamera, replication::LocalPlayer};
 
@@ -14,14 +14,14 @@ pub(crate) struct ViewDirectionPlugin;
 
 impl Plugin for ViewDirectionPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(FixedUpdate, update_view_direction_from_camera);
+        app.add_systems(FixedUpdate, update_look_orienatation_from_camera);
         app.add_systems(FixedUpdate, draw_debug_line);
     }
 }
 
 fn draw_debug_line(
     mut gizmos: Gizmos<PhysicsGizmos>,
-    q_view_dir: Query<(Entity, &ViewDirection), With<Replicated>>,
+    q_view_dir: Query<(Entity, &LookOrientation), With<Replicated>>,
     q_parent: Query<&GlobalTransform>,
 ) {
     for (_entity, view_dir) in q_view_dir.iter() {
@@ -42,10 +42,10 @@ fn draw_debug_line(
     gizmos.draw_line(a, b, color);
 }
 
-pub fn create_view_direction_component(commands: &mut Commands) -> Entity {
+pub fn create_look_orientation_component(commands: &mut Commands) -> Entity {
     commands
         .spawn((
-            ViewDirection::default(),
+            LookOrientation::default(),
             LocalViewDirection,
             ReplicateToServer,
             // ParentSync::default(),
@@ -53,9 +53,9 @@ pub fn create_view_direction_component(commands: &mut Commands) -> Entity {
         .id()
 }
 
-fn update_view_direction_from_camera(
+fn update_look_orienatation_from_camera(
     q_camera: Query<&Transform, (With<Camera3d>, With<LocalCamera>)>,
-    mut q_player: Query<(Entity, &mut ViewDirection), With<LocalViewDirection>>,
+    mut q_player: Query<(Entity, &mut LookOrientation), With<LocalViewDirection>>,
 ) {
     for cam in q_camera.iter() {
         for (_, mut view_direction) in q_player.iter_mut() {
@@ -66,7 +66,7 @@ fn update_view_direction_from_camera(
             let quat = Quat::from_rotation_arc(Vec3::Z, forward.into());
 
             // Update the ViewDirection
-            *view_direction = ViewDirection(quat);
+            *view_direction = LookOrientation(quat);
         }
     }
 }

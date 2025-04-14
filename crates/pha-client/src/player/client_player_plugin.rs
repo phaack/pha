@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use super::{movement::ClientMovementPlugin, view_direction::ViewDirectionPlugin};
+use super::{movement::ClientMovementPlugin, client_look_orientation::ViewDirectionPlugin};
 
 pub struct ClientPlayerPlugin;
 

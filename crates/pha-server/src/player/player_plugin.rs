@@ -1,13 +1,12 @@
 use bevy::prelude::*;
 
-use super::{movement::MovementPlugin, view_direction::ViewDirectionPlugin};
+use super::{movement::MovementPlugin, server_look_orientation::ServerLookOrientationPlugin};
 
 pub(crate) struct PlayerPlugin;
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(MovementPlugin);
-        // TODO: into common
-        app.add_plugins(ViewDirectionPlugin);
+        app.add_plugins(ServerLookOrientationPlugin);
     }
 }

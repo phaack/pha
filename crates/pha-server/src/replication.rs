@@ -8,7 +8,7 @@ use lightyear::prelude::{
 use pha_assets::CurrentLevel;
 use pha_common::REPLICATION_GROUP_PREDICTED;
 use pha_protocol::{
-    component::{Player, ViewDirection},
+    component::Player,
     message::{ClientLevelLoadComplete, Level, ServerWelcome, UnorderedReliable},
 };
 

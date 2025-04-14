@@ -1,4 +1,6 @@
-use crate::{game_state::GameState, player::view_direction::create_view_direction_component};
+use crate::{
+    game_state::GameState, player::client_look_orientation::create_look_orientation_component,
+};
 use bevy::prelude::*;
 use lightyear::prelude::{
     client::{ClientCommandsExt, ClientConnection, NetClient, ReplicateToServer},
@@ -6,7 +8,7 @@ use lightyear::prelude::{
 };
 use pha_assets::{CurrentLevel, LevelState};
 use pha_protocol::{
-    component::{Player, ViewDirection},
+    component::Player,
     message::{ClientLevelLoadComplete, ServerWelcome, UnorderedReliable},
 };
 
@@ -80,10 +82,10 @@ fn await_spawn(
 
     for (entity, player) in &q_spawned_player {
         if player.0 == client.id() {
-            // Add both LocalPlayer and ViewDirection components
+            // Add both LocalPlayer and LookOrientation components
             commands.entity(entity).insert(LocalPlayer);
-            // Create seperate ViewDirection entity for networking
-            let view_dir = create_view_direction_component(&mut commands);
+            // Create seperate LookOrientation entity for networking
+            let view_dir = create_look_orientation_component(&mut commands);
             // // Add the ViewDirection as a child
             commands.entity(entity).add_child(view_dir);
 

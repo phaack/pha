@@ -8,21 +8,19 @@ use lightyear::{
     utils::bevy::TransformLinearInterpolation,
 };
 
+use crate::components::look_orientation::LookOrientation;
+
 #[derive(Component, Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct Player(pub ClientId);
 
-#[derive(Component, Serialize, Deserialize, Clone, Debug, PartialEq, Default, Reflect)]
-pub struct ViewDirection(pub Quaternion);
-
 pub fn register_components(app: &mut App) {
-    app.register_type::<ViewDirection>();
+    app.register_type::<LookOrientation>();
+    app.register_component::<LookOrientation>(ChannelDirection::Bidirectional)
+        .add_prediction(ComponentSyncMode::Full);
 
     app.register_component::<Player>(ChannelDirection::ServerToClient)
         .add_prediction(ComponentSyncMode::Once)
         .add_interpolation(ComponentSyncMode::Once);
-
-    app.register_component::<ViewDirection>(ChannelDirection::Bidirectional)
-        .add_prediction(ComponentSyncMode::Full);
 
     app.register_component::<Position>(ChannelDirection::ServerToClient)
         .add_prediction(ComponentSyncMode::Full)

@@ -6,10 +6,7 @@ use lightyear::prelude::{
     server::ReplicationTarget,
 };
 use pha_assets::{LevelState, assets::GlobalAssets};
-use pha_protocol::{
-    component::{Player, ViewDirection},
-    input::NetworkedInput,
-};
+use pha_protocol::{component::Player, input::NetworkedInput};
 
 use crate::{Rendered, Simulated};
 

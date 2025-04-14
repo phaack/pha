@@ -2,7 +2,6 @@ use avian3d::prelude::Rotation;
 use bevy::prelude::*;
 use leafwing_input_manager::prelude::ActionState;
 use lightyear::prelude::ClientReplicate;
-use pha_protocol::component::ViewDirection;
 use pha_render::camera::DefaultCamera;
 
 use crate::{game_state::GameState, input::LocalInput, replication::LocalPlayer};
