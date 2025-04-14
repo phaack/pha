@@ -1,5 +1,6 @@
+use avian3d::prelude::{DebugRender, PhysicsGizmoExt, PhysicsGizmos};
 use bevy::prelude::*;
-use lightyear::prelude::client::ReplicateToServer;
+use lightyear::prelude::{Replicated, client::ReplicateToServer};
 use pha_protocol::component::ViewDirection;
 
 use crate::{player_camera::LocalCamera, replication::LocalPlayer};
@@ -12,7 +13,31 @@ pub(crate) struct ViewDirectionPlugin;
 impl Plugin for ViewDirectionPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(FixedUpdate, update_view_direction_from_camera);
+        app.add_systems(FixedUpdate, draw_debug_line);
     }
+}
+
+fn draw_debug_line(
+    mut gizmos: Gizmos<PhysicsGizmos>,
+    q_view_dir: Query<(Entity, &ViewDirection), With<Replicated>>,
+    q_parent: Query<&GlobalTransform>,
+) {
+    for (_entity, view_dir) in q_view_dir.iter() {
+        let origin = Vec3::default();
+
+        // Convert the quaternion into a direction vector (e.g., forward = negative Z in Bevy)
+        let forward = view_dir.0 * Vec3::NEG_Z;
+        let end = (origin + forward) * 100.0;
+
+        println!("Drawing line from {:?} to {:?}", origin, end);
+
+        gizmos.draw_line(origin, end, Color::srgb_u8(0, 150, 50));
+    }
+    let a = Vec3::new(0.0, 0.0, 0.0);
+    let b = Vec3::new(0.0, 100.0, 0.0);
+    let color = Color::srgb_u8(200, 10, 10);
+
+    gizmos.draw_line(a, b, color);
 }
 
 pub fn create_view_direction_component(commands: &mut Commands) -> Entity {

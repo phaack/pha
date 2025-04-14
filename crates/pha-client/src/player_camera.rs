@@ -63,10 +63,10 @@ fn rotate_camera_with_mouse_input(
             // Apply the rotation to all cameras with LocalCamera component
             for mut camera_transform in q_camera.iter_mut() {
                 // Create a horizontal rotation (around Y axis) based on mouse X movement
-                let yaw_rotation = Quat::from_rotation_y(-mouse_delta_x * 0.0001);
+                let yaw_rotation = Quat::from_rotation_y(-mouse_delta_x * 0.001);
 
                 // Create a vertical rotation (around local X axis) based on mouse Y movement
-                let pitch_rotation = Quat::from_rotation_x(-mouse_delta_y * 0.0001);
+                let pitch_rotation = Quat::from_rotation_x(-mouse_delta_y * 0.001);
 
                 // Apply rotations to camera transform
                 // Horizontal rotation is applied to the global Y axis
@@ -78,8 +78,8 @@ fn rotate_camera_with_mouse_input(
 
                 // Optionally: Clamp vertical rotation to prevent over-rotation
                 // This requires decomposing and recomposing the quaternion
-                let (mut pitch, yaw, roll) = camera_transform.rotation.to_euler(EulerRot::YXZ);
-                pitch = pitch.clamp(-1.0, 1.0); // Clamp to approximately +/- 60 degrees
+                let (mut pitch, mut yaw, roll) = camera_transform.rotation.to_euler(EulerRot::YXZ);
+                yaw = yaw.clamp(-1.0, 1.0); // Clamp to approximately +/- 60 degrees
                 camera_transform.rotation = Quat::from_euler(EulerRot::YXZ, pitch, yaw, roll);
             }
         }

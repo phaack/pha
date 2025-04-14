@@ -24,11 +24,11 @@ pub fn register_components(app: &mut App) {
     app.register_component::<ViewDirection>(ChannelDirection::Bidirectional)
         .add_prediction(ComponentSyncMode::Full);
 
-    // app.register_component::<Position>(ChannelDirection::ServerToClient)
-    //     .add_prediction(ComponentSyncMode::Full)
-    //     .add_interpolation(ComponentSyncMode::Full)
-    //     .add_interpolation_fn(|start, end, t| Position(start.lerp(**end, t)))
-    //     .add_correction_fn(|start, end, t| Position(start.lerp(**end, t)));
+    app.register_component::<Position>(ChannelDirection::ServerToClient)
+        .add_prediction(ComponentSyncMode::Full)
+        .add_interpolation(ComponentSyncMode::Full)
+        .add_interpolation_fn(|start, end, t| Position(start.lerp(**end, t)))
+        .add_correction_fn(|start, end, t| Position(start.lerp(**end, t)));
 
     app.register_component::<Rotation>(ChannelDirection::ServerToClient)
         .add_prediction(ComponentSyncMode::Full)
