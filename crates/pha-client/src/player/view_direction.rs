@@ -1,6 +1,8 @@
 use avian3d::prelude::{DebugRender, PhysicsGizmoExt, PhysicsGizmos};
 use bevy::prelude::*;
-use lightyear::prelude::{Replicated, client::ReplicateToServer};
+use lightyear::prelude::{
+    ParentSync, ReplicateHierarchy, Replicated, ReplicationGroup, client::ReplicateToServer,
+};
 use pha_protocol::component::ViewDirection;
 
 use crate::{player_camera::LocalCamera, replication::LocalPlayer};
@@ -46,6 +48,7 @@ pub fn create_view_direction_component(commands: &mut Commands) -> Entity {
             ViewDirection::default(),
             LocalViewDirection,
             ReplicateToServer,
+            // ParentSync::default(),
         ))
         .id()
 }

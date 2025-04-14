@@ -6,7 +6,7 @@ use lightyear::prelude::{
 use pha_assets::{CurrentLevel, LevelState};
 use pha_protocol::message::{ClientHostRequestShutdown, Level};
 
-use crate::{app::ServerMode, player::view_direction::handle_client_view_direction_added};
+use crate::app::ServerMode;
 
 pub struct NetworkPlugin;
 
@@ -14,7 +14,6 @@ impl Plugin for NetworkPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, start_server);
         app.add_systems(Update, on_host_request_shutdown);
-        app.add_systems(Update, handle_client_view_direction_added);
 
         app.add_systems(
             OnExit(NetworkingState::Stopping),

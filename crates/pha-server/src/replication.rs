@@ -51,10 +51,6 @@ fn on_client_load_complete(
                         enabled: false,
                         ..default()
                     },
-                    // target: ReplicationTarget {
-                    //     target: NetworkTarget::AllExceptSingle(ev.from),
-                    // },
-                    // authority: lightyear::prelude::server::AuthorityPeer::Client(ev.from),
                     ..Default::default()
                 },
             ));

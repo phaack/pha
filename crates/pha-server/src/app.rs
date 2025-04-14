@@ -26,7 +26,9 @@ use lightyear::{
 use pha_common::CommonPlugin;
 use pha_render::RenderPlugin;
 
-use crate::{network::NetworkPlugin, replication::ReplicationPlugin};
+use crate::{
+    network::NetworkPlugin, player::player_plugin::PlayerPlugin, replication::ReplicationPlugin,
+};
 
 #[derive(Resource, PartialEq, Eq)]
 pub enum ServerMode {
@@ -103,7 +105,7 @@ pub fn build_server_app(server_config: ServerConfig, asset_path: String, mode: S
     app.add_plugins(ServerPlugins {
         config: server_config,
     })
-    .add_plugins((CommonPlugin, NetworkPlugin, ReplicationPlugin))
+    .add_plugins((CommonPlugin, NetworkPlugin, ReplicationPlugin, PlayerPlugin))
     .insert_resource(mode);
 
     app

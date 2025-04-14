@@ -69,7 +69,7 @@ fn cleanup_local_player(mut commands: Commands, local_players: Query<Entity, Wit
 
 fn await_spawn(
     mut commands: Commands,
-    q_spawned_player: Query<(Entity, &Player), Added<Player>>,
+    q_spawned_player: Query<(Entity, &Player), (Added<Player>, Without<Replicated>)>,
     client: Res<ClientConnection>,
     existing_local_players: Query<Entity, With<LocalPlayer>>,
 ) {
@@ -84,7 +84,7 @@ fn await_spawn(
             commands.entity(entity).insert(LocalPlayer);
             // Create seperate ViewDirection entity for networking
             let view_dir = create_view_direction_component(&mut commands);
-            // Add the ViewDirection as a child
+            // // Add the ViewDirection as a child
             commands.entity(entity).add_child(view_dir);
 
             commands.set_state(GameState::Playing);
