@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use lightyear::prelude::{
     FromClients, MessageSend, NetworkTarget, ReplicateHierarchy, Replicating, ServerConnectEvent,
     ServerConnectionManager, ServerDisconnectEvent, ServerReplicate,
-    server::{ControlledBy, Lifetime, ServerCommandsExt, SyncTarget},
+    server::{ControlledBy, Lifetime, ReplicationTarget, ServerCommandsExt, SyncTarget},
 };
 use pha_assets::CurrentLevel;
 use pha_common::REPLICATION_GROUP_PREDICTED;
@@ -37,7 +37,6 @@ fn on_client_load_complete(
                 player_start_position,
                 Rotation::default(),
                 Player(ev.from),
-                ViewDirection::default(),
                 ServerReplicate {
                     group: REPLICATION_GROUP_PREDICTED,
                     controlled_by: ControlledBy {
@@ -52,7 +51,11 @@ fn on_client_load_complete(
                         enabled: false,
                         ..default()
                     },
-                    ..default()
+                    // target: ReplicationTarget {
+                    //     target: NetworkTarget::AllExceptSingle(ev.from),
+                    // },
+                    // authority: lightyear::prelude::server::AuthorityPeer::Client(ev.from),
+                    ..Default::default()
                 },
             ));
         } else {

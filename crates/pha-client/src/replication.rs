@@ -1,7 +1,7 @@
-use crate::game_state::GameState;
+use crate::{game_state::GameState, player::view_direction::create_view_direction_component};
 use bevy::prelude::*;
 use lightyear::prelude::{
-    client::{ClientCommandsExt, ClientConnection, NetClient},
+    client::{ClientCommandsExt, ClientConnection, NetClient, ReplicateToServer},
     *,
 };
 use pha_assets::{CurrentLevel, LevelState};
@@ -24,7 +24,7 @@ impl Plugin for ReplicationPlugin {
         );
         app.add_systems(Update, await_spawn.run_if(in_state(GameState::Spawning)));
         app.add_systems(OnEnter(LevelState::Loaded), on_assets_loaded);
-        
+
         // Add a cleanup system to run when the player disconnects or changes states
         app.add_systems(OnExit(GameState::Playing), cleanup_local_player);
     }
@@ -81,10 +81,12 @@ fn await_spawn(
     for (entity, player) in &q_spawned_player {
         if player.0 == client.id() {
             // Add both LocalPlayer and ViewDirection components
-            commands.entity(entity).insert((
-                LocalPlayer,
-                ViewDirection::default(),
-            ));
+            commands.entity(entity).insert(LocalPlayer);
+            // Create seperate ViewDirection entity for networking
+            let view_dir = create_view_direction_component(&mut commands);
+            // Add the ViewDirection as a child
+            commands.entity(entity).add_child(view_dir);
+
             commands.set_state(GameState::Playing);
         }
     }

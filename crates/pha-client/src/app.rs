@@ -14,6 +14,7 @@ use pha_render::RenderPlugin;
 
 use crate::game_state::{GameLifecyclePlugin, GameState};
 use crate::input::InputPlugin;
+use crate::player::view_direction::ViewDirectionPlugin;
 use crate::player_camera::PlayerCameraPlugin;
 use crate::{
     interpolation::InterpolationPlugin, network::NetworkPlugin, replication::ReplicationPlugin,
@@ -71,6 +72,7 @@ fn build_core_client_app(
         InterpolationPlugin,
         PlayerCameraPlugin,
         FpsCounterPlugin,
+        ViewDirectionPlugin,
     ));
 
     app.insert_resource(AssetPath(asset_path));

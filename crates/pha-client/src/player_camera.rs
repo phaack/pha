@@ -1,10 +1,11 @@
 use avian3d::prelude::Rotation;
 use bevy::prelude::*;
+use leafwing_input_manager::prelude::ActionState;
 use lightyear::prelude::ClientReplicate;
 use pha_protocol::component::ViewDirection;
 use pha_render::camera::DefaultCamera;
 
-use crate::{game_state::GameState, replication::LocalPlayer};
+use crate::{game_state::GameState, input::LocalInput, replication::LocalPlayer};
 
 #[derive(Component)]
 pub(crate) struct LocalCamera;
@@ -20,22 +21,12 @@ impl Plugin for PlayerCameraPlugin {
             (disable_default_camera, add_player_camera),
         );
 
-        app.add_systems(FixedUpdate, test_rotate_camera);
-        app.add_systems(FixedUpdate, update_view_direction);
+        app.add_systems(FixedUpdate, rotate_camera_with_mouse_input);
     }
 }
 
 fn add_player_camera(mut q_player: Query<Entity, With<LocalPlayer>>, mut commands: Commands) {
-    let player_camera = commands
-        .spawn(Camera3d::default())
-        .insert(LocalCamera)
-        // .insert(ClientReplicate {
-        //     target: lightyear::prelude::client::ReplicateToServer,
-        //     authority: lightyear::prelude::HasAuthority,
-        //     replicating: lightyear::prelude::Replicating,
-        //     ..Default::default()
-        // })
-        .id();
+    let player_camera = commands.spawn(Camera3d::default()).insert(LocalCamera).id();
     for entity in q_player.iter() {
         commands.entity(entity).add_child(player_camera);
     }
@@ -58,33 +49,39 @@ fn enable_default_camera(mut q_camera: Query<&mut Camera, With<DefaultCamera>>) 
     }
 }
 
-fn test_rotate_camera(
-    mut q_camera: Query<(&mut Transform, &Camera), (With<Camera3d>, Without<DefaultCamera>)>,
+fn rotate_camera_with_mouse_input(
+    mut q_camera: Query<&mut Transform, (With<Camera3d>, With<LocalCamera>)>,
+    q_input: Query<&ActionState<LocalInput>, With<LocalPlayer>>,
     time: Res<Time>,
 ) {
-    // only rotate every 2 seconds
-    if time.elapsed_secs() % 2.0 < 0.01 {
-        for (mut transform, _) in q_camera.iter_mut() {
-            // rotate left, right
-            transform.rotation = Quat::from_rotation_y(time.elapsed_secs());
-        }
-    }
-}
+    for input in q_input.iter() {
+        if let Some(mouse_movement) = input.dual_axis_data(&LocalInput::MouseMove) {
+            // Get the mouse X and Y movement values
+            let mouse_delta_x = mouse_movement.pair.x;
+            let mouse_delta_y = mouse_movement.pair.y;
 
-fn update_view_direction(
-    q_camera: Query<&Transform, (With<Camera3d>, With<LocalCamera>)>,
-    mut q_player: Query<(Entity, &mut ViewDirection), With<LocalPlayer>>,
-) {
-    if let Ok(camera_transform) = q_camera.get_single() {
-        for (_, mut view_direction) in q_player.iter_mut() {
-            // Convert Bevy's Quat to avian3d's Quaternion
-            let forward = camera_transform.forward();
-            // expects two vectors
-            // forward is a direction and not a vector
-            let quat = Quat::from_rotation_arc(Vec3::Z, forward.into());
+            // Apply the rotation to all cameras with LocalCamera component
+            for mut camera_transform in q_camera.iter_mut() {
+                // Create a horizontal rotation (around Y axis) based on mouse X movement
+                let yaw_rotation = Quat::from_rotation_y(-mouse_delta_x * 0.0001);
 
-            // Update the ViewDirection
-            *view_direction = ViewDirection(quat);
+                // Create a vertical rotation (around local X axis) based on mouse Y movement
+                let pitch_rotation = Quat::from_rotation_x(-mouse_delta_y * 0.0001);
+
+                // Apply rotations to camera transform
+                // Horizontal rotation is applied to the global Y axis
+                camera_transform.rotation = yaw_rotation * camera_transform.rotation;
+
+                // Vertical rotation is applied to the local X axis
+                // We need to rotate around the local X axis by applying rotation after the current rotation
+                camera_transform.rotation = camera_transform.rotation * pitch_rotation;
+
+                // Optionally: Clamp vertical rotation to prevent over-rotation
+                // This requires decomposing and recomposing the quaternion
+                let (mut pitch, yaw, roll) = camera_transform.rotation.to_euler(EulerRot::YXZ);
+                pitch = pitch.clamp(-1.0, 1.0); // Clamp to approximately +/- 60 degrees
+                camera_transform.rotation = Quat::from_euler(EulerRot::YXZ, pitch, yaw, roll);
+            }
         }
     }
 }
