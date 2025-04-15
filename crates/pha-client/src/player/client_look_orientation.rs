@@ -1,7 +1,8 @@
 use avian3d::prelude::{DebugRender, PhysicsGizmoExt, PhysicsGizmos};
 use bevy::prelude::*;
 use lightyear::prelude::{
-    ParentSync, ReplicateHierarchy, Replicated, ReplicationGroup, client::ReplicateToServer,
+    HasAuthority, ParentSync, ReplicateHierarchy, Replicated, ReplicationGroup,
+    client::ReplicateToServer,
 };
 use pha_protocol::components::look_orientation::LookOrientation;
 
@@ -15,31 +16,7 @@ pub(crate) struct ViewDirectionPlugin;
 impl Plugin for ViewDirectionPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(FixedUpdate, update_look_orienatation_from_camera);
-        app.add_systems(FixedUpdate, draw_debug_line);
     }
-}
-
-fn draw_debug_line(
-    mut gizmos: Gizmos<PhysicsGizmos>,
-    q_view_dir: Query<(Entity, &LookOrientation), With<Replicated>>,
-    q_parent: Query<&GlobalTransform>,
-) {
-    for (_entity, view_dir) in q_view_dir.iter() {
-        let origin = Vec3::default();
-
-        // Convert the quaternion into a direction vector (e.g., forward = negative Z in Bevy)
-        let forward = view_dir.0 * Vec3::NEG_Z;
-        let end = (origin + forward) * 100.0;
-
-        println!("Drawing line from {:?} to {:?}", origin, end);
-
-        gizmos.draw_line(origin, end, Color::srgb_u8(0, 150, 50));
-    }
-    let a = Vec3::new(0.0, 0.0, 0.0);
-    let b = Vec3::new(0.0, 100.0, 0.0);
-    let color = Color::srgb_u8(200, 10, 10);
-
-    gizmos.draw_line(a, b, color);
 }
 
 pub fn create_look_orientation_component(commands: &mut Commands) -> Entity {
@@ -48,6 +25,7 @@ pub fn create_look_orientation_component(commands: &mut Commands) -> Entity {
             LookOrientation::default(),
             LocalViewDirection,
             ReplicateToServer,
+            // HasAuthority,
             // ParentSync::default(),
         ))
         .id()
@@ -59,14 +37,8 @@ fn update_look_orienatation_from_camera(
 ) {
     for cam in q_camera.iter() {
         for (_, mut view_direction) in q_player.iter_mut() {
-            // Convert Bevy's Quat to avian3d's Quaternion
-            let forward = cam.forward();
-            // expects two vectors
-            // forward is a direction and not a vector
-            let quat = Quat::from_rotation_arc(Vec3::Z, forward.into());
-
             // Update the ViewDirection
-            *view_direction = LookOrientation(quat);
+            *view_direction = LookOrientation::look_at(cam.forward().as_vec3());
         }
     }
 }

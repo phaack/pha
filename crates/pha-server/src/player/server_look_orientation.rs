@@ -1,9 +1,10 @@
+use avian3d::prelude::{PhysicsGizmoExt, PhysicsGizmos};
 use bevy::prelude::*;
 use lightyear::prelude::{
     NetworkTarget, Replicated, ServerConnectionManager, ServerReplicate,
     server::{AuthorityPeer, ReplicationTarget, SyncTarget},
 };
-use pha_common::Rendered;
+use pha_common::{Rendered, Simulated};
 use pha_protocol::{component::Player, components::look_orientation::LookOrientation};
 
 pub(crate) struct ServerLookOrientationPlugin;
@@ -11,6 +12,28 @@ pub(crate) struct ServerLookOrientationPlugin;
 impl Plugin for ServerLookOrientationPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Update, handle_server_view_direction_added);
+        app.add_systems(Update, draw_debug_line);
+    }
+}
+
+fn draw_debug_line(
+    mut gizmos: Gizmos<PhysicsGizmos>,
+    q_look_orientation: Query<(Entity, &LookOrientation, &Parent), Rendered>,
+    q_global_transform: Query<&GlobalTransform>,
+) {
+    for (_entity, view_dir, parent) in q_look_orientation.iter() {
+        let mut origin = Vec3::default();
+
+        if let Some(transform) = q_global_transform.get(parent.get()).ok() {
+            origin = transform.translation();
+        }
+
+        let forward = LookOrientation::forward(view_dir);
+        let end = origin + forward * 100.0;
+
+        let color = Color::srgb_u8(170, 100, 50);
+
+        gizmos.draw_line(origin, end, color);
     }
 }
 
