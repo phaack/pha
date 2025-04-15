@@ -1,17 +1,18 @@
 use crate::{
-    game_state::GameState,
-    player::{
-        client_player_plugin::client_spawn_local_player_components,
-    },
+    game_state::GameState, player::client_player_plugin::client_spawn_local_player_components,
 };
+use pha_common::player::camera_rotation_plugin::PlayerCameraHolderMarker;
+
 use bevy::prelude::*;
 use lightyear::prelude::{
     client::{ClientCommandsExt, ClientConnection, NetClient, ReplicateToServer},
+    server::{AuthorityPeer, ControlledBy, Lifetime, ReplicationTarget, SyncTarget},
     *,
 };
 use pha_assets::{CurrentLevel, LevelState};
 use pha_protocol::{
     component::Player,
+    components::camera::NetworkedCameraTransform,
     message::{ClientLevelLoadComplete, ServerWelcome, UnorderedReliable},
 };
 
@@ -83,15 +84,47 @@ fn await_spawn(
         commands.entity(entity).remove::<LocalPlayer>();
     }
 
-    for (player_entity, player) in &q_spawned_player {
-        if player.0 == client.id() {
-            // Add both LocalPlayer and LookOrientation components
-            commands.entity(player_entity).insert(LocalPlayer);
+    if let Some(player_entity) = q_spawned_player.get_single().ok() {
+        let client_id = player_entity.1.0;
 
-            // call client_spawn_local_player_component
-            client_spawn_local_player_components(&mut commands, player_entity);
+        commands.entity(player_entity.0).insert(LocalPlayer);
 
-            commands.set_state(GameState::Playing);
-        }
+        let camera_holder = commands
+            .spawn((
+                NetworkedCameraTransform::default(),
+                PlayerCameraHolderMarker,
+                ServerReplicate {
+                    target: ReplicationTarget {
+                        target: NetworkTarget::AllExceptSingle(client_id),
+                    },
+                    authority: AuthorityPeer::Server,
+                    sync: SyncTarget {
+                        prediction: NetworkTarget::Single(client_id),
+                        interpolation: NetworkTarget::AllExceptSingle(client_id),
+                    },
+                    controlled_by: ControlledBy {
+                        target: NetworkTarget::Single(client_id),
+                        lifetime: Lifetime::Persistent,
+                    },
+                    hierarchy: ReplicateHierarchy {
+                        enabled: true,
+                        recursive: true,
+                    },
+                    // marker: lightyear::prelude::Replicating,
+                    ..Default::default()
+                },
+            ))
+            .insert((
+                Camera {
+                    is_active: true,
+                    ..Default::default()
+                },
+                Camera3d::default(),
+            ))
+            .id();
+
+        commands.entity(player_entity.0).add_child(camera_holder);
+
+        commands.set_state(GameState::Playing);
     }
 }

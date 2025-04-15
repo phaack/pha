@@ -8,6 +8,8 @@ use lightyear::{
     utils::bevy::TransformLinearInterpolation,
 };
 
+use crate::components::camera::NetworkedCameraTransform;
+
 #[derive(Component, Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct Player(pub ClientId);
 
@@ -21,6 +23,11 @@ pub fn register_components(app: &mut App) {
         .add_interpolation(ComponentSyncMode::Full)
         .add_interpolation_fn(|start, end, t| Position(start.lerp(**end, t)))
         .add_correction_fn(|start, end, t| Position(start.lerp(**end, t)));
+
+    app.register_type::<NetworkedCameraTransform>();
+    app.register_component::<NetworkedCameraTransform>(ChannelDirection::Bidirectional)
+        .add_prediction(ComponentSyncMode::Full);
+    // .add_interpolation(ComponentSyncMode::Full);
 
     app.add_interpolation_fn::<Transform>(TransformLinearInterpolation::lerp);
 }
