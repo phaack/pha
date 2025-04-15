@@ -22,7 +22,7 @@ impl Plugin for LocalPlayerCameraPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnExit(GameState::Playing), enable_default_camera);
         app.add_systems(OnEnter(GameState::MainMenu), enable_default_camera);
-        app.add_systems(OnEnter(GameState::Playing), (disable_default_camera));
+        app.add_systems(OnEnter(GameState::Playing), disable_default_camera);
 
         app.add_systems(FixedUpdate, rotate_camera_with_mouse_input);
     }

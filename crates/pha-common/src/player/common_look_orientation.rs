@@ -1,6 +1,6 @@
 use avian3d::prelude::Rotation;
 use bevy::prelude::*;
-use pha_protocol::{component::Player, components::look_orientation::LookOrientation};
+use pha_protocol::component::Player;
 
 pub(crate) struct CommonViewDirectionPlugin;
 

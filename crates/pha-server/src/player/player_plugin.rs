@@ -7,14 +7,13 @@ use lightyear::prelude::{
 use pha_common::REPLICATION_GROUP_PREDICTED;
 use pha_protocol::component::Player;
 
-use super::{movement::MovementPlugin, server_look_orientation::ServerLookOrientationPlugin};
+use super::movement::MovementPlugin;
 
 pub(crate) struct PlayerPlugin;
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(MovementPlugin);
-        app.add_plugins(ServerLookOrientationPlugin);
     }
 }
 

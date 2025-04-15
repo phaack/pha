@@ -14,7 +14,6 @@ use pha_render::RenderPlugin;
 
 use crate::game_state::{GameLifecyclePlugin, GameState};
 use crate::input::InputPlugin;
-use crate::player::client_look_orientation::ViewDirectionPlugin;
 use crate::player::client_player_plugin::ClientPlayerPlugin;
 use crate::player::movement::ClientMovementPlugin;
 use crate::{

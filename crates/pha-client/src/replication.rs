@@ -1,7 +1,6 @@
 use crate::{
     game_state::GameState,
     player::{
-        client_look_orientation::create_look_orientation_component,
         client_player_plugin::client_spawn_local_player_components,
     },
 };
