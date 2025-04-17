@@ -9,6 +9,8 @@ pha-assets = { path = "../pha-assets" }
 lightyear.workspace = true
 leafwing-input-manager.workspace = true
 avian3d.workspace = true
+bevy-tnua-avian3d.workspace = true
+bevy-tnua.workspace = true
 serde.workspace = true
 bevy.workspace = true
 bevy-inspector-egui.workspace = true

@@ -7,7 +7,7 @@ impl Plugin for CameraPlugin {
         app.add_systems(Startup, |mut commands: Commands| {
             commands
                 .spawn(Camera3d::default())
-                .insert(Transform::from_xyz(-50.0, 50.0, 50.0).looking_at(Vec3::ZERO, Vec3::Y));
+                .insert(Transform::from_xyz(-15.0, 15.0, 15.0).looking_at(Vec3::ZERO, Vec3::Y));
         });
     }
 }

@@ -8,6 +8,8 @@ pub enum NetworkedInput {
     Move,
     #[actionlike(DualAxis)]
     Aim,
+    #[actionlike(Button)]
+    Jump,
 }
 
 pub fn register_input(app: &mut App) {

@@ -1,5 +1,6 @@
 use avian3d::prelude::*;
-use bevy::prelude::*;
+use bevy::{math::VectorSpace, prelude::*};
+use bevy_tnua::{TnuaMotor, TnuaVelChange, prelude::TnuaController};
 use lightyear::{
     prelude::{
         client::{ComponentSyncMode, LerpFn},
@@ -16,17 +17,22 @@ pub fn register_components(app: &mut App) {
         .add_prediction(ComponentSyncMode::Once)
         .add_interpolation(ComponentSyncMode::Once);
 
-    app.register_component::<Position>(ChannelDirection::ServerToClient)
-        .add_prediction(ComponentSyncMode::Full)
-        .add_interpolation(ComponentSyncMode::Full)
-        .add_interpolation_fn(|start, end, t| Position(start.lerp(**end, t)))
-        .add_correction_fn(|start, end, t| Position(start.lerp(**end, t)));
+    // app.register_component::<Position>(ChannelDirection::ServerToClient)
+    //     .add_prediction(ComponentSyncMode::Full)
+    //     .add_interpolation(ComponentSyncMode::Full)
+    //     .add_interpolation_fn(|start, end, t| Position(start.lerp(**end, t)))
+    //     .add_correction_fn(|start, end, t| Position(start.lerp(**end, t)));
+    //
+    // app.register_component::<Rotation>(ChannelDirection::ServerToClient)
+    //     .add_prediction(ComponentSyncMode::Full)
+    //     .add_interpolation(ComponentSyncMode::Full)
+    //     .add_interpolation_fn(|start, end, t| Rotation(*start.slerp(*end, t)))
+    //     .add_correction_fn(|start, end, t| Rotation(*start.slerp(*end, t)));
 
-    app.register_component::<Rotation>(ChannelDirection::ServerToClient)
-        .add_prediction(ComponentSyncMode::Full)
-        .add_interpolation(ComponentSyncMode::Full)
-        .add_interpolation_fn(|start, end, t| Rotation(*start.slerp(*end, t)))
-        .add_correction_fn(|start, end, t| Rotation(*start.slerp(*end, t)));
+    // app.register_component::<LinearVelocity>(ChannelDirection::ServerToClient)
+    //     .add_prediction(ComponentSyncMode::Full);
 
+    app.register_component::<Transform>(ChannelDirection::ServerToClient);
+    app.add_prediction::<Transform>(ComponentSyncMode::Full);
     app.add_interpolation_fn::<Transform>(TransformLinearInterpolation::lerp);
 }

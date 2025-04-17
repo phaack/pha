@@ -1,10 +1,13 @@
 use avian3d::{PhysicsPlugins, prelude::PhysicsInterpolationPlugin};
 use bevy::prelude::*;
+use bevy_tnua::prelude::*;
+use bevy_tnua_avian3d::*;
 use lightyear::prelude::{
     PreSpawnedPlayerObject, ReplicationGroup,
     client::{Interpolated, Predicted, VisualInterpolateStatus},
     server::ReplicationTarget,
 };
+
 use pha_assets::AssetPlugin;
 use pha_protocol::ProtocolPlugin;
 
@@ -23,6 +26,8 @@ impl Plugin for CommonPlugin {
                 .disable::<PhysicsInterpolationPlugin>(),
             level::LevelPlugin,
             player::PlayerPlugin,
+            TnuaControllerPlugin::new(FixedUpdate),
+            TnuaAvian3dPlugin::new(FixedUpdate),
         ));
     }
 }
