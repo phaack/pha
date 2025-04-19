@@ -4,6 +4,7 @@ pub mod app;
 pub mod host;
 
 mod game_state;
+mod gameplay;
 mod input;
 mod interpolation;
 mod network;

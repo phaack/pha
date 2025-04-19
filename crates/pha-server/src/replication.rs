@@ -29,7 +29,7 @@ fn on_client_load_complete(
 ) {
     for ev in ev_client_load_complete.drain() {
         let player_exists = q_players.iter().any(|player_id| player_id.0 == ev.from);
-        let player_start_position = Position(Vec3::new(0.0, 6.0, 0.0));
+        let player_start_position = Position(Vec3::new(0.0, 2.0, 0.0));
 
         if !player_exists {
             commands.spawn((

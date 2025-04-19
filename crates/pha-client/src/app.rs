@@ -13,6 +13,7 @@ use pha_common::CommonPlugin;
 use pha_render::RenderPlugin;
 
 use crate::game_state::{GameLifecyclePlugin, GameState};
+use crate::gameplay::player::camera::TestCameraPlugin;
 use crate::input::InputPlugin;
 use crate::{
     interpolation::InterpolationPlugin, network::NetworkPlugin, replication::ReplicationPlugin,
@@ -67,6 +68,7 @@ fn build_core_client_app(
         ReplicationPlugin,
         InputPlugin,
         InterpolationPlugin,
+        TestCameraPlugin,
     ));
 
     app.insert_resource(AssetPath(asset_path));

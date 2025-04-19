@@ -1,4 +1,4 @@
-use avian3d::prelude::PhysicsDebugPlugin;
+use avian3d::prelude::{PhysicsDebugPlugin, PhysicsGizmos};
 use bevy::{color::palettes::css::WHITE, prelude::*};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
@@ -12,8 +12,11 @@ impl Plugin for RenderPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((
             camera::CameraPlugin,
-            //PhysicsDebugPlugin::default(),
+            PhysicsDebugPlugin::default(),
             WorldInspectorPlugin::default(),
         ));
+
+        app.init_gizmo_group::<PhysicsGizmos>();
+        app.insert_resource::<GizmoConfigStore>(GizmoConfigStore::default());
     }
 }
