@@ -73,8 +73,8 @@ fn on_level_change(
 
     match **current_level {
         Level::Example => {
-            level_assets.example_level = asset_server
-                .load(GltfAssetLabel::Scene(0).from_asset("scenes/example_environment.glb"));
+            level_assets.example_level =
+                asset_server.load(GltfAssetLabel::Scene(0).from_asset("scenes/example_map.glb"));
 
             loading_assets
                 .handles
